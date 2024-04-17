@@ -9,5 +9,5 @@
   },
   "prettier.singleQuote": true,
   "prettier.trailingComma": "all",
-  "cSpell.words": ["kupipodariday"]
+  "cSpell.words": ["kupipodariday", "typeorm"]
 }
