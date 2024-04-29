@@ -6,8 +6,8 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UserDto } from './user.dto';
-import { WishDto } from './wish.dto';
+// import { UserDto } from './user.dto';
+// import { WishDto } from './wish.dto';
 
 export class OfferDto {
   @IsNotEmpty()
@@ -22,10 +22,10 @@ export class OfferDto {
   @IsDate()
   updatedAt: Date;
 
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => WishDto)
-  item: WishDto;
+  // @IsNotEmpty()
+  // @ValidateNested()
+  // @Type(() => WishDto)
+  // item: WishDto;
 
   @IsNotEmpty()
   @IsNumber()
@@ -35,8 +35,8 @@ export class OfferDto {
   @IsBoolean()
   hidden: boolean;
 
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => UserDto)
-  user: UserDto;
+  // @IsNotEmpty()
+  // @ValidateNested()
+  // @Type(() => UserDto)
+  // user: UserDto;
 }

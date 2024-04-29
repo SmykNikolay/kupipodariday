@@ -6,3 +6,5 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
+
+// docker run --name kupipodariday -e POSTGRES_USER=student -e POSTGRES_PASSWORD=student -e POSTGRES_DB=kupipodariday -p 5432:5432 -d postgres

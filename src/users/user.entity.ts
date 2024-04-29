@@ -21,7 +21,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ length: 30, unique: true })
+  @Column({ length: 64, unique: true })
   username: string;
 
   @Column({ length: 200, default: 'Пока ничего не рассказал о себе' })
