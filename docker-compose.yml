@@ -22,4 +22,3 @@ services:
       - POSTGRES_DB=kupipodariday
     ports:
       - '5432:5432'
-port
