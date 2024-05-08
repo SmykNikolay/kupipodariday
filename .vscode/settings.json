@@ -9,5 +9,11 @@
   },
   "prettier.singleQuote": true,
   "prettier.trailingComma": "all",
-  "cSpell.words": ["kupipodariday", "nestjs", "typeorm"]
+  "cSpell.words": [
+    "kupipodariday",
+    "nestjs",
+    "signin",
+    "typeorm",
+    "Userdto"
+  ]
 }
