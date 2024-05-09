@@ -33,7 +33,7 @@ export class UsersController {
   @Get('me/wishes')
   async getActiveUserWishes(@Req() req) {
     return await (
-      await this.usersService.findUserById(req.user.id, ['wishes'])
+      await this.usersService.findUserById(req.user.id)
     ).wishes;
   }
 
@@ -44,7 +44,7 @@ export class UsersController {
 
   @Get(':username/wishes')
   async getUserWishes(@Param('username') username: string) {
-    return await this.usersService.findUserByUsername(username, ['wishes']);
+    return await this.usersService.findUserByUsername(username);
   }
 
   @Post('find')

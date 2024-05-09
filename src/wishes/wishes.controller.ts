@@ -32,17 +32,17 @@ export class WishesController {
 
   @Get('/last')
   async getLastWishes() {
-    return await this.wishesService.showLastWish();
+    return await this.wishesService.showLast();
   }
 
   @Get('/top')
   async getTopWishes() {
-    return await this.wishesService.showTopWish();
+    return await this.wishesService.showTop();
   }
 
   @Get(':id')
   async getWish(@Param('id') id: number) {
-    return await this.wishesService.findWishById(id, ['owner']);
+    return await this.wishesService.findById(id, ['owner']);
   }
 
   @Patch(':id')
@@ -51,16 +51,11 @@ export class WishesController {
     @Param('id') id: number,
     @Body() updateWishDto: UpdateWishDto,
   ) {
-    return await this.wishesService.updateWishById(
-      req.user.id,
-      id,
-      updateWishDto,
-    );
+    return await this.wishesService.updateById(req.user.id, id, updateWishDto);
   }
-
   @Delete(':id')
-  async deleteWish(@Param('id') id: number, @Req() currentUser) {
-    return await this.wishesService.deleteById(id, currentUser);
+  async deleteWish(@Param('id') id: number, @Req() req) {
+    return await this.wishesService.deleteById(id, req.user);
   }
 
   @Post(':id/copy')

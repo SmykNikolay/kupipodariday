@@ -1,5 +1,3 @@
-import { User } from 'src/users/entities/user.entity';
-import { Wish } from 'src/wishes/entities/wish.entity';
 import {
   Column,
   CreateDateColumn,
@@ -8,6 +6,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Wish } from 'src/wishes/entities/wish.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity({ name: 'offers' })
 export class Offer {

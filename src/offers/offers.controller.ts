@@ -1,7 +1,15 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Param,
+} from '@nestjs/common';
+import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { OffersService } from './offers.service';
 import { CreateOfferDto } from './dto/createOffer.dto';
-import { JwtGuard } from 'src/auth/guard/jwt.guard';
 
 @UseGuards(JwtGuard)
 @Controller('offers')
@@ -10,7 +18,7 @@ export class OffersController {
   @Post()
   async createOffer(
     @Body() createOfferDto: CreateOfferDto,
-    @Req() currentUser,
+    @Req() currentUser: any,
   ) {
     return await this.offersService.createOffer(currentUser.user, {
       ...createOfferDto,
@@ -24,7 +32,7 @@ export class OffersController {
   }
 
   @Get(':id')
-  async getOffer(@Body('id') id: number) {
+  async getOffer(@Param('id') id: number) {
     return await this.offersService.findOfferById(id);
   }
 }

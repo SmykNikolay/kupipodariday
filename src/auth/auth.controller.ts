@@ -1,9 +1,11 @@
 import {
   Body,
   ClassSerializerInterceptor,
+  ConflictException,
   Controller,
+  HttpCode,
   Post,
-  Req,
+  UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -11,7 +13,8 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { CreateUserDto } from 'src/users/dto/createUser.dto';
 import { LocalGuard } from './guard/local.guard';
-import { User } from 'src/users/entities/user.entity';
+
+import { SigninUserDto } from './dto/signinUserD.dto';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('')
@@ -23,13 +26,30 @@ export class AuthController {
 
   @UseGuards(LocalGuard)
   @Post('signin')
-  async signIn(@Req() req: Request & { user: User }) {
-    return this.authService.login(req.user);
+  @HttpCode(201)
+  async login(@Body() signinUserDto: SigninUserDto) {
+    try {
+      return await this.authService.login(signinUserDto);
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw new UnauthorizedException('Некорректная пара логин и пароль');
+      }
+      throw error;
+    }
   }
 
   @Post('signup')
-  async signUp(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    return await this.authService.login(user);
+  @HttpCode(201)
+  async signup(@Body() createUserDto: CreateUserDto) {
+    try {
+      return await this.usersService.create(createUserDto);
+    } catch (error) {
+      if (error instanceof ConflictException) {
+        throw new ConflictException(
+          'Пользователь с таким email или username уже зарегистрирован',
+        );
+      }
+      throw error;
+    }
   }
 }

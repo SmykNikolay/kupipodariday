@@ -4,7 +4,7 @@ services:
     build: .
     image: kupipodariday-image
     ports:
-      - '3000:3000'
+      - '3001:3001'
     environment:
       - DATABASE_TYPE=postgres
       - DATABASE_HOST=db
