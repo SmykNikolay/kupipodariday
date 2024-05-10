@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateWishDto } from './dto/createWish.dto';
@@ -21,23 +22,31 @@ export class WishesService {
   ) {}
 
   async createWish(createWishDto: CreateWishDto, username: string) {
-    const user = await this.usersService.findUserByUsername(username);
-    const wish = this.wishRepo.create({ ...createWishDto, owner: user });
-    return this.wishRepo.save(wish);
+    try {
+      const user = await this.usersService.findUserByName(username);
+      if (!user) {
+        throw new Error('Пользователь в неведении');
+      }
+      const wish = this.wishRepo.create({ ...createWishDto, owner: user });
+      return this.wishRepo.save(wish);
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Сервер в замешательстве');
+    }
   }
 
-  async showLast() {
+  async wishLast() {
     return this.wishRepo.find({ order: { createdAt: 'DESC' }, take: 40 });
   }
 
-  async showTop() {
+  async wishesTop() {
     return this.wishRepo.find({ order: { copied: 'DESC' }, take: 10 });
   }
 
   async findById(id: number, relations: string[] = []) {
     const wish = await this.wishRepo.findOne({ where: { id }, relations });
     if (!wish) {
-      throw new NotFoundException('Данного подарка не существует');
+      throw new NotFoundException('Подарок ушел в никуда');
     }
     return wish;
   }
@@ -47,7 +56,7 @@ export class WishesService {
 
     if (wish.owner !== currentUser.id) {
       throw new ForbiddenException(
-        'Вы не можете удалить подарок другого пользователя',
+        'Удаление чужого подарка - непозволительная дерзость',
       );
     }
     return this.wishRepo.delete({ id });
@@ -61,7 +70,7 @@ export class WishesService {
     const wish = await this.findById(id, ['owner']);
 
     if (wish.owner.id === currentUser.id) {
-      throw new ConflictException('Вы уже добавили этот подарок себе');
+      throw new ConflictException('Этот подарок уже в вашем списке');
     }
 
     const newWish = { ...wish, copied: wish.copied + 1 };
@@ -72,11 +81,11 @@ export class WishesService {
   async updateById(userId: number, id: number, updateWishDto: UpdateWishDto) {
     const wish = await this.findById(id, ['owner']);
     if (userId !== wish.owner.id) {
-      throw new ForbiddenException('Вы не можете изменить чужой подарок');
+      throw new ForbiddenException('Изменение чужого подарка - недопустимо');
     }
     if (wish.raised !== 0) {
       throw new ConflictException(
-        'Вы не можете изменить стоимость подарка, если уже есть люди, готовые его поддержать',
+        'Изменение стоимости подарка с поддержкой - невозможно',
       );
     }
     return await this.wishRepo.update(id, updateWishDto);
@@ -84,7 +93,7 @@ export class WishesService {
   async updateRaisedId(id: number, updateWishDto: UpdateWishDto) {
     const wish = await this.wishRepo.findOne({ where: { id } });
     if (!wish) {
-      throw new NotFoundException(`Подарок с ID ${id} не был найден`);
+      throw new NotFoundException(`Подарок с ID ${id} ушел в туман`);
     }
 
     const { raised, price } = wish;
@@ -97,7 +106,7 @@ export class WishesService {
     }
 
     if (raised >= price) {
-      throw new ConflictException('Данное желание уже полностью оплачено');
+      throw new ConflictException('Подарок уже полностью оплачен');
     }
 
     if (amountToAdd + raised > price) {

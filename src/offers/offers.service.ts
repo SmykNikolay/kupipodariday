@@ -29,7 +29,7 @@ export class OffersService {
   async findOfferById(query) {
     const offer = await this.offerRepo.findOneBy(query);
     if (!offer) {
-      throw new NotFoundException(`Предложение с ID ${query.id} не найдено.`);
+      throw new NotFoundException(`Предложение с ID ${query.id} ушло в туман.`);
     }
     return offer;
   }
@@ -40,11 +40,11 @@ export class OffersService {
     ]);
 
     if (user.id === wish.owner.id) {
-      throw new ForbiddenException('Вы не можете поддержать свой подарок');
+      throw new ForbiddenException('Самому себе подарки не делаем');
     }
     if (wish.price - wish.raised < createOfferDto.amount) {
       throw new ForbiddenException(
-        'Вы не можете внести сумму больше стоимости подарка',
+        'Пытаетесь внести сумму, превышающую стоимость подарка',
       );
     }
 

@@ -17,7 +17,7 @@ paths:
         - bearer: []
     patch:
       operationId: UsersController_update
-      parameters: []
+      parameters: []offers
       requestBody:
         required: true
         content:

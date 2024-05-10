@@ -1,8 +1,8 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import { User } from 'src/users/entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { SigninUserDto } from './dto/signinUserD.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,38 +13,26 @@ export class AuthService {
     private usersService: UsersService,
   ) {}
 
-  async validateUser(username: string, password: string) {
-    const user = await this.usersService.findUserByUsername({ username });
+  async validateAuth(username: string, password: string) {
+    const user = await this.usersService.findUserByName(username);
 
     if (!user) {
-      this.logger.warn(
-        `Failed login attempt for non-existing user: ${username}`,
-      );
-      throw new UnauthorizedException('Invalid username or password');
+      return null;
     }
 
-    const isMatch = await this.checkPassword(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
-      this.logger.warn(`Failed login attempt for user: ${username}`);
-      throw new UnauthorizedException('Invalid username or password');
+    if (user && isMatch) {
+      delete user.password;
+      return user;
     }
-
-    return user;
+    return null;
   }
 
-  async checkPassword(
-    plainPassword: string,
-    hashedPassword: string,
-  ): Promise<boolean> {
-    return bcrypt.compare(plainPassword, hashedPassword);
-  }
-
-  async login(loginDto: SigninUserDto) {
-    const user = await this.validateUser(loginDto.username, loginDto.password);
-    const payload = { username: user.username, sub: user.id };
+  async auth(user: User) {
+    const payload = { ...user, sub: user.id };
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload, { secret: 'jwt_secret' }),
     };
   }
 }

@@ -13,6 +13,7 @@ import {
 import { JwtGuard } from 'src/auth/guard/jwt.guard';
 import { UpdateUserDto } from './dto/updateUser.dto';
 import { UsersService } from './users.service';
+import { FindUserDto } from './dto/findUser.dto';
 
 @UseGuards(JwtGuard)
 @Controller('users')
@@ -22,33 +23,32 @@ export class UsersController {
 
   @Get('me')
   async getActiveUser(@Req() req) {
-    return await this.usersService.findUserById(req.user.id);
+    return await this.usersService.findOne(req.user.id);
   }
 
   @Patch('me')
   async updateUser(@Req() req, @Body() updateUserdto: UpdateUserDto) {
-    return await this.usersService.updateUserById(req.user.id, updateUserdto);
+    return await this.usersService.update(req.user.id, updateUserdto);
   }
 
   @Get('me/wishes')
   async getActiveUserWishes(@Req() req) {
     return await (
-      await this.usersService.findUserById(req.user.id)
+      await this.usersService.findOne(req.user.id)
     ).wishes;
   }
 
   @Get(':username')
   async getByUsername(@Param('username') username: string) {
-    return await this.usersService.findUserByUsername(username);
+    return await this.usersService.findUserByName(username);
   }
 
   @Get(':username/wishes')
   async getUserWishes(@Param('username') username: string) {
-    return await this.usersService.findUserByUsername(username);
+    return await this.usersService.findUserByName(username);
   }
-
   @Post('find')
-  async getUsers(@Body() searchQuery: any) {
-    return await this.usersService.findUsersByQuery(searchQuery.query);
+  findUsers(@Body('query') query: FindUserDto) {
+    return this.usersService.findMany(query);
   }
 }

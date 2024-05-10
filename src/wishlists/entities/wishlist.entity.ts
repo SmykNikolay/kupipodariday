@@ -1,3 +1,4 @@
+import { Length } from 'class-validator';
 import { User } from 'src/users/entities/user.entity';
 import { Wish } from 'src/wishes/entities/wish.entity';
 import {
@@ -22,7 +23,8 @@ export class Wishlist {
   @UpdateDateColumn()
   updatedAt: number;
 
-  @Column()
+  @Column({ length: 250 })
+  @Length(0, 250)
   name: string;
 
   @Column()
